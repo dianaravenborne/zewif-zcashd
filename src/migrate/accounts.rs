@@ -492,7 +492,7 @@ fn find_account_key_id_by_seed_fingerprint(
 }
 
 /// Initialize an AddressRegistry based on the unified accounts data
-pub fn initialize_address_registry(
+pub(crate) fn initialize_address_registry(
     wallet: &ZcashdWallet,
     unified_accounts: &UnifiedAccounts,
 ) -> Result<AddressRegistry> {
