@@ -27,7 +27,7 @@ use crate::{
 /// This function handles transparent address assignment:
 /// - If registry is available, tries to map addresses to accounts
 /// - Otherwise assigns all addresses to the default account
-pub fn convert_transparent_addresses(
+pub(crate) fn convert_transparent_addresses(
     wallet: &ZcashdWallet,
     default_account: &mut zewif::Account,
     address_registry: Option<&AddressRegistry>,
@@ -309,12 +309,11 @@ fn emit_transparent_address(
 
     if let (Some(registry), Some(accounts)) = (address_registry, accounts_map.as_mut()) {
         let addr_id = AddressId::Transparent(zcashd_address.into());
-        if let Some(account_id) = registry.find_account(&addr_id) {
-            if let Some(target_account) = accounts.get_mut(account_id) {
+        if let Some(account_id) = registry.find_account(&addr_id)
+            && let Some(target_account) = accounts.get_mut(account_id) {
                 target_account.add_address(zewif_address);
                 return;
             }
-        }
     }
 
     // No registry match: route to the default account. This is the correct
@@ -330,7 +329,7 @@ fn emit_transparent_address(
 /// This function handles sapling address assignment:
 /// - If registry is available, tries to map addresses to accounts
 /// - Otherwise assigns all addresses to the default account
-pub fn convert_sapling_addresses(
+pub(crate) fn convert_sapling_addresses(
     wallet: &ZcashdWallet,
     default_account: &mut zewif::Account,
     address_registry: Option<&AddressRegistry>,
@@ -440,12 +439,11 @@ fn route_sapling_address(
 ) {
     if let (Some(registry), Some(accounts)) = (address_registry, accounts_map.as_mut()) {
         let addr_id = AddressId::Sapling(address_str.to_string());
-        if let Some(account_id) = registry.find_account(&addr_id) {
-            if let Some(target_account) = accounts.get_mut(account_id) {
+        if let Some(account_id) = registry.find_account(&addr_id)
+            && let Some(target_account) = accounts.get_mut(account_id) {
                 target_account.add_address(zewif_address);
                 return;
             }
-        }
     }
     default_account.add_address(zewif_address);
 }
@@ -456,7 +454,7 @@ fn route_sapling_address(
 /// - Extracts unified addresses from UnifiedAddressMetadata
 /// - Preserves diversifier indices and receiver types
 /// - Assigns unified addresses to appropriate accounts using the registry
-pub fn convert_unified_addresses(
+pub(crate) fn convert_unified_addresses(
     wallet: &ZcashdWallet,
     default_account: &mut zewif::Account,
     address_registry: Option<&AddressRegistry>,
@@ -520,25 +518,22 @@ pub fn convert_unified_addresses(
             let addr_id = AddressId::Unified(ua_str[0..20].to_string());
 
             if let Some(account_id) = registry.find_account(&addr_id) {
-                if let Some(accounts) = accounts_map.as_mut() {
-                    if let Some(target_account) = accounts.get_mut(account_id) {
+                if let Some(accounts) = accounts_map.as_mut()
+                    && let Some(target_account) = accounts.get_mut(account_id) {
                         // Add to the specified account
                         target_account.add_address(zewif_address.clone());
                         assigned = true;
                     }
-                }
             } else {
                 // Try with the Unified variant if UnifiedAccountAddress didn't work
                 let addr_id = AddressId::Unified(ua_str);
-                if let Some(account_id) = registry.find_account(&addr_id) {
-                    if let Some(accounts) = accounts_map.as_mut() {
-                        if let Some(target_account) = accounts.get_mut(account_id) {
+                if let Some(account_id) = registry.find_account(&addr_id)
+                    && let Some(accounts) = accounts_map.as_mut()
+                        && let Some(target_account) = accounts.get_mut(account_id) {
                             // Add to the specified account
                             target_account.add_address(zewif_address.clone());
                             assigned = true;
                         }
-                    }
-                }
             }
         }
 

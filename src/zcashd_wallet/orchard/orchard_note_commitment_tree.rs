@@ -18,6 +18,7 @@ const ORCHARD_TREE_DEPTH: u8 = 32;
 
 /// A data structure holding chain positions for a single transaction.
 #[derive(Clone, Debug)]
+#[allow(dead_code)]
 struct NotePositions {
     /// The height of the block containing the transaction.
     tx_height: BlockHeight,
@@ -28,6 +29,7 @@ struct NotePositions {
 
 /// Represents the complete Orchard note commitment tree
 #[derive(Debug, Clone)]
+#[allow(dead_code)]
 pub struct OrchardNoteCommitmentTree {
     last_checkpoint: Option<BlockHeight>,
     commitment_tree: BridgeTree<MerkleHashOrchard, BlockHeight, ORCHARD_TREE_DEPTH>,
@@ -74,6 +76,7 @@ impl OrchardNoteCommitmentTree {
     }
 
     /// Convert to Zewif IncremetalWitness format
+    #[allow(dead_code)]
     fn extract_witness(
         &self,
         _position: Position,
