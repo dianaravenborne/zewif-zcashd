@@ -380,6 +380,7 @@ fn is_likely_change_output(wallet: &ZcashdWallet, address: &str) -> bool {
 }
 
 /// Check if a nullifier belongs to a specific address
+#[allow(dead_code)]
 fn is_nullifier_for_address(_wallet: &ZcashdWallet, _nullifier_hex: &str, _address: &str) -> bool {
     // In a production implementation, this would check if the nullifier was derived
     // from notes sent to the given address. For now, this is a placeholder.
