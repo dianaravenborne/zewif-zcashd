@@ -40,3 +40,31 @@ with-context = []
 
 [patch.crates-io]
 zewif = { git = "https://github.com/zcash/zewif.git", rev = "798d7b3554ebada05bea63b67ee66f9c2558a21a" }
+
+# `orchard 0.10.x` was yanked from crates.io along with every other pre-0.14
+# release. The yank does not affect the git history; this crate is pinned to
+# the zcashd 0.6.2 dependency set for `wallet.dat` bit-compatibility, so we
+# redirect to the original release tag rather than bumping the crate (which
+# would force the entire pinned stack forward and break the pin invariant).
+orchard = { git = "https://github.com/zcash/orchard.git", tag = "0.10.2" }
+
+# `halo2_gadgets 0.3.x` was yanked at the same time as the pre-0.14 `orchard`
+# releases (the yanks were correlated -- the affected lines all reach back
+# into the same audit window). Patched `orchard 0.10.2` (above) requires
+# `halo2_gadgets ^0.3`, so we need a matching git redirect to a tag whose
+# source still exists. `halo2_proofs` is co-redirected to the same revision
+# so the two crates' shared trait surfaces stay consistent: without the
+# co-redirect, cargo resolves `halo2_proofs 0.3.0` (from the git tag, via
+# `halo2_gadgets`) and `halo2_proofs 0.3.2` (from crates.io, via `orchard`)
+# side-by-side, and feature unification across the two breaks orchard's
+# build.
+halo2_gadgets = { git = "https://github.com/zcash/halo2.git", tag = "halo2_gadgets-0.3.0" }
+halo2_proofs = { git = "https://github.com/zcash/halo2.git", tag = "halo2_gadgets-0.3.0" }
+
+# TEMPORARY: All `core2` versions on crates.io were yanked by upstream on
+# 2026-04-14, breaking fresh dependency resolution because we still pull
+# `core2 ^0.3` transitively (via `equihash 0.2.2`, itself reached via the
+# pinned `zcash_primitives 0.19`). Redirect that request to a local shim that
+# re-exports `corez` (the Zcash ecosystem's clean-room replacement,
+# https://github.com/zcash/corez). See `vendor/core2-shim-0.3/README.md`.
+core2 = { path = "vendor/core2-shim-0.3" }
